@@ -21,57 +21,28 @@ public class Main {
 
         //code
         try{
-            Member member = new Member();
-            member.setUsername("member1");
-            member.setAge(10);
-            em.persist(member);
+            for(int i=0;i<100;i++){
+                Member member = new Member();
+                member.setUsername("member" + i);
+                member.setAge(i);
+                em.persist(member);
+            }
+
 
             em.flush();
             em.clear();
 
-            /*//entity 프로젝션
-            List<Member> result = em.createQuery("select m from Member m", Member.class)
-                            .getResultList();
-            Member findMember = result.get(0);
-            findMember.setAge(20); //update 쿼리 발생함*/
-
-            //아래의 방식은 Join 쿼리 발생함.
-            /*List<Team> result = em.createQuery("select m.team from Member m", Team.class)
-                    .getResultList();*/
-            //Join 쿼리 명시적 표기 할것
-            /*List<Team> result = em.createQuery("select t from Member m join m.team t", Team.class)
-                    .getResultList();*/
-
-            //임베디드타입 프로젝션
-            /*List<Address> result = em.createQuery("select o.address from Order o", Address.class)
-                    .getResultList();*/
-
-            //스칼라타입 프로젝션
-            em.createQuery("select distinct m.username, m.age from Member m")
+            //JPA 페이징 API
+            // setFirstResult(int startPosition) : 조회시작 위치(0부터시작)
+            // setMaxResults(int maxResult) : 조회할 데이터 수
+            List<Member> resultList = em.createQuery("select m from Member m order by m.age desc", Member.class)
+                    .setFirstResult(0)
+                    .setMaxResults(10)
                     .getResultList();
-
-            //프로젝션 여러값 조회
-            /*List resultList = em.createQuery("select distinct m.username, m.age from Member m")
-                    .getResultList();
-            Object o = resultList.get(0);
-            Object[] result = (Object[]) o;
-            System.out.println("result = " + result[0]);
-            System.out.println("result = " + result[1]);*/
-
-            //프로젝션 여러값 조회 2
-            /*List<Object[]> resultList = em.createQuery("select distinct m.username, m.age from Member m")
-                    .getResultList();
-            Object[] result = resultList.get(0);
-            System.out.println("result = " + result[0]);
-            System.out.println("result = " + result[1]);*/
-
-            //dto로 조회 : new 명령어로 패키지명 작성해야함
-            List<MemberDTO> resultList = em.createQuery("select new jpql.MemberDTO(m.username, m.age) from Member m", MemberDTO.class)
-                    .getResultList();
-            MemberDTO dto = resultList.get(0);
-            System.out.println("dto.getUsername() = " + dto.getUsername());
-            System.out.println("dto.getAge() = " + dto.getAge());
-
+            System.out.println("result.size = " + resultList.size());
+            for(Member member1 : resultList){
+                System.out.println("member1 = "+ member1);
+            }
 
 
             tx.commit();
