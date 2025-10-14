@@ -21,28 +21,40 @@ public class Main {
 
         //code
         try{
-            for(int i=0;i<100;i++){
-                Member member = new Member();
-                member.setUsername("member" + i);
-                member.setAge(i);
-                em.persist(member);
-            }
+            Team team = new Team();
+            team.setName("teamA");
+            em.persist(team);
+            Member member = new Member();
+            member.setUsername("teamA");
+            member.setAge(10);
+            member.changeTeam(team);
+            em.persist(member);
 
 
             em.flush();
             em.clear();
 
-            //JPA 페이징 API
-            // setFirstResult(int startPosition) : 조회시작 위치(0부터시작)
-            // setMaxResults(int maxResult) : 조회할 데이터 수
-            List<Member> resultList = em.createQuery("select m from Member m order by m.age desc", Member.class)
-                    .setFirstResult(0)
-                    .setMaxResults(10)
+            //내부조인
+            /*String query = "select m from Member m inner join m.team t";
+            List<Member> resultList = em.createQuery(query, Member.class)
+                    .getResultList();*/
+            //외부조인
+            /*String query2 = "select m from Member m left join m.team t";
+            List<Member> resultList2 = em.createQuery(query2, Member.class)
+                    .getResultList();*/
+            //세타조인
+            /*String query3 = "select m from Member m, Team t where m.username = t.name";
+            List<Member> resultList3 = em.createQuery(query3, Member.class)
                     .getResultList();
-            System.out.println("result.size = " + resultList.size());
-            for(Member member1 : resultList){
-                System.out.println("member1 = "+ member1);
-            }
+
+            System.out.println("size : " + resultList3.size());*/
+
+            //hibernate 5.1 이상부터 조인대상 필터링 가능
+            // ex-jpql) select m, t from Member m left join m.team t on t.name='a'
+            // ex-sql ) select m.*, t.* from Member m left join Team t on m.TEAM_ID=t.id and t.name='A'
+            //연관관계없는 엔티티 외부 조인 가능
+            // ex-jpql) select m, t from Member m left join Team t on m.username = t.name
+            // ex-sql ) select m.* t.* from Member m left join Team t on m.username = t.name
 
 
             tx.commit();
