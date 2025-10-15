@@ -59,6 +59,31 @@ public class Main {
             //서브쿼리
             // FROM 절에서는 서브쿼리 사용 불가. JOIN 으로 해결하거나 application 에서 데이터 가공방식, 또는 native 로 해결할것.
 
+            //타입 표현식
+            /*String query = "select m.username, 'HELLO', TRUE from Member m "
+                    + "where m.memberType = jpql.MemberType.ADMIN";
+            List<Object[]> resultList = em.createQuery(query, Object[].class)
+                    .getResultList();
+            for(Object[] objects : resultList){
+                System.out.println("objects = " + objects[0]);
+                System.out.println("objects = " + objects[1]);
+                System.out.println("objects = " + objects[2]);
+            }*/
+            //타입 표현식
+            String query = "select m.username, 'HELLO', TRUE from Member m "
+                    + "where m.memberType = :userType "
+                    + "AND m.username is not NULL";
+            List<Object[]> resultList = em.createQuery(query, Object[].class)
+                    .setParameter("userType", MemberType.ADMIN)
+                    .getResultList();
+            for(Object[] objects : resultList){
+                System.out.println("objects = " + objects[0]);
+                System.out.println("objects = " + objects[1]);
+                System.out.println("objects = " + objects[2]);
+            }
+            //상속관계 엔티티 타입 조회 -> DTYPE 값을 @DiscriminatorColumn 값과 일치한지 조회함.
+            //em.createQuery("select i from Item i where type(i) = Book ", Item.class);
+
             tx.commit();
         } catch (Exception e){
             tx.rollback();
