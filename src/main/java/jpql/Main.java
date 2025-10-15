@@ -56,6 +56,8 @@ public class Main {
             // ex-jpql) select m, t from Member m left join Team t on m.username = t.name
             // ex-sql ) select m.* t.* from Member m left join Team t on m.username = t.name
 
+            //서브쿼리
+            // FROM 절에서는 서브쿼리 사용 불가. JOIN 으로 해결하거나 application 에서 데이터 가공방식, 또는 native 로 해결할것.
 
             tx.commit();
         } catch (Exception e){
