@@ -108,18 +108,68 @@ public class Main {
                 System.out.println("s = " + s);
             }*/
             //NULLIF
-            String query =
+            /*String query =
                     "select nullif(m.username, '관리자') as username " +
                             "from Member m ";
             List<String> result = em.createQuery(query, String.class)
                     .getResultList();
             for(String s : result){
                 System.out.println("s = " + s);
-            }
+            }*/
 
+            //JPQL 기본함수
+            /*String query =
+                    "select 'a' || 'b' From Member m";
+            //"select substring(m.username, 2, 3) From Member m";
+            // ... CONCAT, TRIM, LOWER, UPPER, LENGTH, LOCATE, ABS, SQRT, MOD
+            //"select locate('de', 'abcdefg') From Member m"; -> Type Integer.class
+            List<String> result = em.createQuery(query, String.class)
+                    .getResultList();
+            for(String s : result){
+                System.out.println("s = " + s);
+            }*/
+            //LOCATE
+            /*String query =
+                    "select locate('de', 'abcdefg') From Member m";
+            List<Integer> result = em.createQuery(query, Integer.class)
+                    .getResultList();
+            for(Integer s : result){
+                System.out.println("s = " + s);
+            }*/
 
+            //SIZE - 컬렉션 크기
+            /*String query =
+                    "select size(t.members) From Team t";
+            List<Integer> result = em.createQuery(query, Integer.class)
+                    .getResultList();
+            for(Integer s : result){
+                System.out.println("s = " + s);
+            }*/
+
+            //INDEX - @OrderColumn 리스트 값타입 컬렉션 위치값구할때 ; 사용 권장X
+            /*String query =
+                    "select index(t.members) From Team t";
+            List<Integer> result = em.createQuery(query, Integer.class)
+                    .getResultList();
+            for(Integer s : result){
+                System.out.println("s = " + s);
+            }*/
+
+            //사용자 정의함수 호출 - Dialect 를 만들어서 미리 등록해 두어야함.
+            //1. 데이터베이스에 맞게 ex) H2Dialect 를 상속받은 MyH2Dialect 를 생성
+            //2. registerFunction 으로 등록
+            //3. 세팅에 H2Dialect 말고 MyH2Dialect 를 dialect 로 등록
+            //아래 사용법 예시
+            /*String query =
+                    //"select function('group_concat', m.username) From Member m";
+                    //"select group_concat(m.username) From Member m";
+            List<String> result = em.createQuery(query, String.class)
+                    .getResultList();
+            for(String s : result){
+                System.out.println("s = " + s);*/
 
             tx.commit();
+
         } catch (Exception e){
             tx.rollback();
             System.out.println("e = " + e);
