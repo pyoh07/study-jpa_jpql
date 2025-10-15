@@ -5,6 +5,7 @@ import jakarta.persistence.criteria.CriteriaBuilder;
 import jakarta.persistence.criteria.CriteriaQuery;
 import jakarta.persistence.criteria.Root;
 
+import java.util.Collection;
 import java.util.List;
 import java.util.Objects;
 
@@ -167,6 +168,27 @@ public class Main {
                     .getResultList();
             for(String s : result){
                 System.out.println("s = " + s);*/
+
+            //경로표현식
+            // 상태필드 - 경로 탐색의 끝, 탐색 X
+            /*String query = "select m.username From Member m";
+            List<String> result = em.createQuery(query, String.class)
+                    .getResultList();
+            // 단일값 연관경로 - 묵시적 내부조인(inner join) 발생, 탐색O
+            //묵시적 내부조인 발생하므로 직관적이지 않음 - > 주의할것
+            String query1 = "select m.team.name From Member m";
+            List<String> result1 = em.createQuery(query1, String.class)
+                    .getResultList();
+            // 컬렉션값 연관 경로 - 묵시적 내부조인 발생, 탐색X
+            String query2 = "select t.members From Team t";
+            List<Collection> result2 = em.createQuery(query2, Collection.class)
+                    .getResultList();
+            // 컬렉션값 연관 경로 - 대안 -> 탐색 O -->>>> 묵시적 조인은 사용하지 말것... 명시적으로 할것
+            String query3 = "select m.username From Team t join t.members m";
+            List<String> result3 = em.createQuery(query3, String.class)
+                    .getResultList();*/
+            /** !!묵시적 조인은 사용하지 말것... 명시적으로 할것 **/
+
 
             tx.commit();
 
