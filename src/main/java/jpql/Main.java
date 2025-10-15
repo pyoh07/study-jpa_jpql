@@ -70,7 +70,7 @@ public class Main {
                 System.out.println("objects = " + objects[2]);
             }*/
             //타입 표현식
-            String query = "select m.username, 'HELLO', TRUE from Member m "
+            /*String query = "select m.username, 'HELLO', TRUE from Member m "
                     + "where m.memberType = :userType "
                     + "AND m.username is not NULL";
             List<Object[]> resultList = em.createQuery(query, Object[].class)
@@ -80,9 +80,44 @@ public class Main {
                 System.out.println("objects = " + objects[0]);
                 System.out.println("objects = " + objects[1]);
                 System.out.println("objects = " + objects[2]);
-            }
+            }*/
             //상속관계 엔티티 타입 조회 -> DTYPE 값을 @DiscriminatorColumn 값과 일치한지 조회함.
             //em.createQuery("select i from Item i where type(i) = Book ", Item.class);
+
+            //조건식-CASE 식
+            /*String query =
+                    "select " +
+                            "case when m.age <=10 then '학생요금' " +
+                            "   when m.age >=60 then '경로요금' " +
+                            "   else '일반요금' " +
+                            "end " +
+                            "from Member m";
+            List<String> result = em.createQuery(query, String.class)
+                    .getResultList();
+            for(String s : result){
+                System.out.println("s = " + s);
+            }*/
+
+            //COALESCE
+            /*String query =
+                    "select coalesce(m.username, '이름 없는 회원') as username " +
+                            "from Member m ";
+            List<String> result = em.createQuery(query, String.class)
+                    .getResultList();
+            for(String s : result){
+                System.out.println("s = " + s);
+            }*/
+            //NULLIF
+            String query =
+                    "select nullif(m.username, '관리자') as username " +
+                            "from Member m ";
+            List<String> result = em.createQuery(query, String.class)
+                    .getResultList();
+            for(String s : result){
+                System.out.println("s = " + s);
+            }
+
+
 
             tx.commit();
         } catch (Exception e){
