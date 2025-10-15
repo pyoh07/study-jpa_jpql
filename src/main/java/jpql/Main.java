@@ -1,13 +1,8 @@
 package jpql;
 
 import jakarta.persistence.*;
-import jakarta.persistence.criteria.CriteriaBuilder;
-import jakarta.persistence.criteria.CriteriaQuery;
-import jakarta.persistence.criteria.Root;
 
-import java.util.Collection;
 import java.util.List;
-import java.util.Objects;
 
 public class Main {
     public static void main(String[] args) {
@@ -22,7 +17,7 @@ public class Main {
 
         //code
         try{
-            Team team = new Team();
+            /*Team team = new Team();
             team.setName("teamA");
             em.persist(team);
             Member member = new Member();
@@ -33,7 +28,7 @@ public class Main {
 
 
             em.flush();
-            em.clear();
+            em.clear();*/
 
             //내부조인
             /*String query = "select m from Member m inner join m.team t";
@@ -188,6 +183,74 @@ public class Main {
             List<String> result3 = em.createQuery(query3, String.class)
                     .getResultList();*/
             /** !!묵시적 조인은 사용하지 말것... 명시적으로 할것 **/
+
+            /**
+             * 페치조인(fetch join)
+             * 회원조회하며 연관된 팀 함께조회(SQL한번)
+             * jpql ) select m from Member m join fetch m.team
+             * sql ) select m.*,t.* from member m inner join team t on m.team_id=t.id
+             */
+
+            Team teamA = new Team();
+            teamA.setName("teamA");
+            em.persist(teamA);
+            Team teamB = new Team();
+            teamB.setName("teamB");
+            em.persist(teamB);
+
+            Member member1 = new Member();
+            member1.setUsername("회원1");
+            member1.setAge(10);
+            member1.changeTeam(teamA);
+            em.persist(member1);
+            Member member2 = new Member();
+            member2.setUsername("회원2");
+            member2.setAge(10);
+            member2.changeTeam(teamB);
+            em.persist(member2);
+            Member member3 = new Member();
+            member3.setUsername("회원3");
+            member3.setAge(10);
+            member3.changeTeam(teamB);
+            em.persist(member3);
+
+            em.flush();
+            em.clear();
+
+            /*String query = "select m From Member m";
+            List<Member> result = em.createQuery(query, Member.class)
+                    .getResultList();
+            for(Member m : result){
+                System.out.println("m = " + m.getUsername() + ", " + m.getTeam().getName());
+                //회원1, 팀A(SQL) //팀이 프록시 이므로 조회쿼리 발생
+                //회원2, 팀B(SQL)
+                //회원3, 팀B(1차캐시)
+                //회원 100명 -> N+1문제 -> 페치조인 사용
+            }*/
+
+            //페치조인 사용
+            /*String query = "select m From Member m join fetch m.team";
+            List<Member> result = em.createQuery(query, Member.class)
+                    .getResultList();
+            for(Member m : result){
+                System.out.println("m = " + m.getUsername() + ", " + m.getTeam().getName());
+            }*/
+            //컬렉션 페치 조인 - 일대다 관계
+            /**!! Hibernate 6 부터 컬렉션 내의 중복값 처리가 자동으로 됨.
+             * 6이전 -> TeamB에 멤버가 2명이면 Team 은 TeamA, TeamB, TeamB 세개가 리스트에 들어가 있음.
+             * 이전 버전에서는 DISTINCT 로 제거.-> JPQL의 DISTINCT 는 엔티티 중복도 처리함.
+             * */
+            String query = "select distinct t from Team t join fetch t.members";
+            List<Team> result = em.createQuery(query, Team.class)
+                    .getResultList();
+            for(Team t : result){
+                System.out.println("t = " + t.getName() + ", " + t.getMembers().size());
+                for(Member m : t.getMembers()){
+                    System.out.println("m = " + m.getUsername());
+                }
+            }
+
+
 
 
             tx.commit();
