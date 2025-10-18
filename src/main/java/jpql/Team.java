@@ -4,6 +4,7 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.Id;
 import jakarta.persistence.OneToMany;
+import org.hibernate.annotations.BatchSize;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -16,6 +17,7 @@ public class Team {
 
     private String name;
 
+    @BatchSize(size = 10) //컬렉션 페치조인 이슈로 사용
     @OneToMany(mappedBy = "team")
     private List<Member> members = new ArrayList<>();
 

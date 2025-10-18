@@ -240,7 +240,7 @@ public class Main {
              * 6이전 -> TeamB에 멤버가 2명이면 Team 은 TeamA, TeamB, TeamB 세개가 리스트에 들어가 있음.
              * 이전 버전에서는 DISTINCT 로 제거.-> JPQL의 DISTINCT 는 엔티티 중복도 처리함.
              * */
-            String query = "select distinct t from Team t join fetch t.members";
+            /*String query = "select distinct t from Team t join fetch t.members";
             List<Team> result = em.createQuery(query, Team.class)
                     .getResultList();
             for(Team t : result){
@@ -248,8 +248,50 @@ public class Main {
                 for(Member m : t.getMembers()){
                     System.out.println("m = " + m.getUsername());
                 }
-            }
+            }*/
 
+
+            //페치 조인의 특징과 한계
+            // 1.페치조인 대상에 별칭 X
+            // 단, 정합성 이슈때문에 안되지만 페치조인 여러번 사용시 별칭 사용해야 할 수도 있기는 함.
+            //String query = "select distinct t from Team t join fetch t.members m join fetch m.team";
+            // 2. 둘이상 컬렉션 페치조인 불가
+
+
+            // 3. 컬렉션을 페치조인시 페이징 API 사용불가 --->>>, 경고 로그 남기고 메모리에서 페이징(위험)
+            // 단, 일대일, 다대일 단일 값 연관 필드들은 페이징 가능(데이터복제가 생기므로)
+            /*String query = "select t from Team t join fetch t.members m";
+            List<Team> result = em.createQuery(query, Team.class)
+                    .setFirstResult(0)
+                    .setMaxResults(10)
+                    .getResultList();
+            *//**
+             * !!!WARN: HHH90003004: firstResult/maxResults specified with collection fetch; applying in memory
+             *//*
+            System.out.println("result.size() = " + result.size());
+            for(Team t : result){
+                System.out.println("t = " + t.getName() + ", " + t.getMembers().size());
+            }*/
+
+            //해결 -> member 기준으로 join fetch
+            /*String query1 = "select m from Member m join fetch m.team t";
+            List<Team> result1 = em.createQuery(query1, Team.class)
+                    .setFirstResult(0)
+                    .setMaxResults(10)
+                    .getResultList();
+*/
+            //해결 -> member 기준으로 join fetch
+            String query = "select t from Team t";
+            List<Team> result = em.createQuery(query, Team.class)
+                    .setFirstResult(0)
+                    .setMaxResults(2)
+                    .getResultList();
+            for(Team team : result){
+                System.out.println("team = |members= " + team.getName());
+                for(Member member : team.getMembers()){
+                    System.out.println("->member = " + member);
+                }
+            }
 
 
 
