@@ -281,7 +281,7 @@ public class Main {
                     .getResultList();
 */
             //해결 -> member 기준으로 join fetch
-            String query = "select t from Team t";
+            /*String query = "select t from Team t";
             List<Team> result = em.createQuery(query, Team.class)
                     .setFirstResult(0)
                     .setMaxResults(2)
@@ -291,7 +291,35 @@ public class Main {
                 for(Member member : team.getMembers()){
                     System.out.println("->member = " + member);
                 }
+            }*/
+
+            //엔티티 직접 사용 - 기본 키 값 : 엔티티 직접 사용하면 SQL 에서 해당 엔티티 기본키 값을 사용
+            //jpql1 ) select count(m.id) from Member m
+            //jpql2 ) select count(m) from Member m
+            // sql ) select count(m.id) as cnt from Member m; //1과 2는 동일한 sql 쿼리로 나옴
+
+            //엔티티 직접 사용 - 파라미터에 사용
+            /*String query1 = "select m from Member m where m = :member";
+            Member result1 = em.createQuery(query1, Member.class)
+                    .setParameter("member", member1)
+                    .getSingleResult();
+            System.out.println("result1 = " + result1.getUsername());
+            String query2 = "select m from Member m where m.id = :memberId";
+            Member result2 = em.createQuery(query2, Member.class)
+                    .setParameter("memberId", member1.getId())
+                    .getSingleResult();
+            System.out.println("result2 = " + result2.getUsername());*/
+
+            //엔티티 직접 사용 - 외래키 값
+            String query1 = "select m from Member m where m.team = :team";
+            List<Member> result = em.createQuery(query1, Member.class)
+                    .setParameter("team", teamA)//id 로 주어도 동일함
+                    .getResultList();
+            for(Member m : result){
+                System.out.println("m = " + m.getUsername());
             }
+
+
 
 
 
