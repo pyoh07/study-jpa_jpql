@@ -324,12 +324,30 @@ public class Main {
             // 애플리케이션 로딩 시점에 초기화 후 재사용(캐시되어있음)
             // 애플리케이션 로딩 시점에 쿼리 검증 가능
             //spring data jpa 에서는 레퍼지토리에 @Query로 등록가능
-            List<Member> resultList = em.createNamedQuery("Member.findByUsername", Member.class)
+            /*List<Member> resultList = em.createNamedQuery("Member.findByUsername", Member.class)
                     .setParameter("username", "회원1")
                     .getResultList();
             for(Member m : resultList){
                 System.out.println("m = " + m.getUsername());
-            }
+            }*/
+
+            //벌크연산
+            /**! 주의 :: 영속성 컨텍스트 무시하고 데이터베이스에 직접쿼리
+             * 1. 벌크연산 먼저 실행
+             * 2. 연산 수행후 영속성 컨텍스트 초기화로 해결
+             * !**/
+
+            //FLUSH 자동 호출
+            int resultCount = em.createQuery("update Member m set m.age = 20")
+                    .executeUpdate();
+            System.out.println("resultCount = " + resultCount);
+
+            //영속성 컨텍스트에는 반영이 안되어 있으므로 데이터 정합성에 주의해야함.
+            //em.clear 후 em.find 로 db에서 다시 조회해야함.
+            //spring jpa 에서는 @Modify 어노테이션으로 처리
+            System.out.println("member1.age = " + member1.getAge());
+            System.out.println("member2.age = " + member2.getAge());
+            System.out.println("member3.age = " + member3.getAge());
 
 
             tx.commit();
