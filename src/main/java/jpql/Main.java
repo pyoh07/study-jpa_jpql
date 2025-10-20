@@ -311,16 +311,25 @@ public class Main {
             System.out.println("result2 = " + result2.getUsername());*/
 
             //엔티티 직접 사용 - 외래키 값
-            String query1 = "select m from Member m where m.team = :team";
+            /*String query1 = "select m from Member m where m.team = :team";
             List<Member> result = em.createQuery(query1, Member.class)
                     .setParameter("team", teamA)//id 로 주어도 동일함
                     .getResultList();
             for(Member m : result){
                 System.out.println("m = " + m.getUsername());
+            }*/
+
+            //Named 쿼리 - 정적 쿼리
+            //어노테이션 또는 xml 에 정의(xml이 우선권 가짐) persistence.xml 에 매핑파일 등록, 매핑파일에 쿼리작성
+            // 애플리케이션 로딩 시점에 초기화 후 재사용(캐시되어있음)
+            // 애플리케이션 로딩 시점에 쿼리 검증 가능
+            //spring data jpa 에서는 레퍼지토리에 @Query로 등록가능
+            List<Member> resultList = em.createNamedQuery("Member.findByUsername", Member.class)
+                    .setParameter("username", "회원1")
+                    .getResultList();
+            for(Member m : resultList){
+                System.out.println("m = " + m.getUsername());
             }
-
-
-
 
 
             tx.commit();
